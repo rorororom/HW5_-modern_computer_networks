@@ -8,15 +8,10 @@ from .tls_utils import make_client_context
 
 
 Address = Tuple[str, int]
-SocketLike = Union[socket.socket, "ssl.SSLSocket"]  # type: ignore[name-defined]
+SocketLike = Union[socket.socket, "ssl.SSLSocket"]
 
 
 def interactive_talk(sock: SocketLike) -> None:
-    """
-    Простая интерактивная сессия:
-    - читает строки из stdin, отправляет на сервер, печатает ответ
-    - 'quit' завершает сессию
-    """
     try:
         with sock:
             file_r = sock.makefile("rb", buffering=0)
@@ -50,13 +45,6 @@ def run_tcp_client(
     insecure: bool = False,
     server_name: Optional[str] = None,
 ) -> None:
-    """
-    Подключается к серверу и запускает интерактивный обмен.
-    Если use_tls=True — соединение оборачивается в TLS.
-    - cafile: путь к PEM корням (для проверки самоподписанного сертификата сервера)
-    - insecure: отключить проверку сертификата (только для локального теста!)
-    - server_name: SNI (по умолчанию host)
-    """
     raw = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     if use_tls:
@@ -67,7 +55,7 @@ def run_tcp_client(
         try:
             cipher = getattr(sock, "cipher", None)
             if callable(cipher):
-                name, proto, bits = cipher()  # type: ignore[misc]
+                name, proto, bits = cipher()
                 print(f"[client] TLS connected to {host}:{port} (SNI={sni}) cipher={name} proto={proto} bits={bits}")
             else:
                 print(f"[client] TLS connected to {host}:{port} (SNI={sni})")

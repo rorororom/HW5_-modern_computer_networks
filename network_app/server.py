@@ -9,18 +9,16 @@ from .tls_utils import make_server_context
 
 
 Address = Tuple[str, int]
-SocketLike = Union[socket.socket, "ssl.SSLSocket"]  # type: ignore[name-defined]
+SocketLike = Union[socket.socket, "ssl.SSLSocket"]
 
 
 def handle_client(conn: SocketLike, addr: Address) -> None:
     try:
         with conn:
-            # Попробуем вывести базовую TLS-инфу, если это TLS-сокет
             try:
-                # у SSLSocket есть метод cipher()
                 cipher = getattr(conn, "cipher", None)
                 if callable(cipher):
-                    name, proto, bits = cipher()  # type: ignore[misc]
+                    name, proto, bits = cipher()
                     print(f"[server] TLS: cipher={name} proto={proto} bits={bits} from {addr}")
             except Exception:
                 pass
@@ -29,10 +27,8 @@ def handle_client(conn: SocketLike, addr: Address) -> None:
             while True:
                 line = file.readline()
                 if not line:
-                    # клиент закрыл соединение
                     print(f"[server] {addr} disconnected")
                     return
-                # удаляем завершающий \r?\n и декодируем
                 text = line.rstrip(b"\r\n").decode("utf-8", errors="replace")
                 print(f"[server] recv from {addr}: {text!r}")
 
@@ -82,7 +78,6 @@ def run_tcp_server(
 
             if use_tls and tls_ctx is not None:
                 try:
-                    # серверная обёртка
                     conn = tls_ctx.wrap_socket(conn, server_side=True)
                 except Exception as e:
                     print(f"[server] TLS handshake failed for {addr}: {e!r}")

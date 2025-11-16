@@ -18,13 +18,13 @@
     export SSLKEYLOGFILE="$(pwd)/sslkeys.log"
 ```
 
-### 3) Сервер (TLS)
+### 3) Сервер 
 ```
     python -m network_app.server --host 127.0.0.1 --port 8888 \
     --tls --cert server.crt --key server.key
 ```
 
-### 4) Клиент (TLS, быстро без проверки)
+### 4) Клиент 
 ```
     python -m network_app.client --host 127.0.0.1 --port 8888 --tls --insecure
 ```
